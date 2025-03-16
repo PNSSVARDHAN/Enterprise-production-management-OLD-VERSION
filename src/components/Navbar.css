@@ -1,0 +1,100 @@
+/* ✅ Layout Container */
+
+.layout {
+    display: flex;
+    height: 100vh;
+    position: relative;
+}
+
+/* ✅ Background Image with Opacity */
+.layout::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../assets/logo.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.3; /* ✅ Adjust opacity here */
+    z-index: -1;
+}
+
+/* ✅ Sidebar Navigation */
+.navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-right: 1px solid #ddd;
+    width: 200px;
+    transition: width 0.3s;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.navbar.collapsed {
+    width: 60px;
+}
+
+/* ✅ Navbar Title */
+.navbar-title {
+    font-size: 18px;
+    text-align: center;
+    padding: 10px;
+    white-space: nowrap;
+}
+
+/* ✅ Toggle Button */
+.toggle-button {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+/* ✅ Navigation Links */
+.link-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #f0f0f0;
+}
+
+.nav-text {
+    margin-left: 10px;
+}
+
+/* ✅ Main Content Area */
+.content {
+    flex: 1;
+    margin-left: 200px; /* ✅ Pushes content to the right */
+    padding: 20px;
+    width: calc(100% - 200px);
+    transition: margin-left 0.3s, width 0.3s;
+}
+
+.navbar.collapsed + .content {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+}

@@ -1,0 +1,44 @@
+/* ✅ Employee Dashboard Container */
+.employee-dashboard {
+    width: 90%;
+    margin: 20px auto;
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+}
+
+/* ✅ Title Styling */
+.employee-dashboard h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* ✅ Task Box */
+.task-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    width: 60%;
+    margin: auto;
+    text-align: left;
+}
+
+/* ✅ Task List */
+.task-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.task-box li {
+    font-size: 16px;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* ✅ No Task Message */
+.no-task {
+    font-size: 18px;
+    color: red;
+    font-weight: bold;
+    margin-top: 20px;
+}

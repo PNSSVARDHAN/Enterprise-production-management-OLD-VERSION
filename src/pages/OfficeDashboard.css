@@ -1,0 +1,74 @@
+/* ✅ Main Dashboard Container */
+.dashboard-container {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    margin-left:-120px;
+    margin-right:120px;
+}
+
+/* ✅ Stats Boxes - Grid Layout */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* ✅ Individual Stat Box */
+.stat-box {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-box h3 {
+    color: #0056b3;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.stat-box p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* ✅ Task Table */
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.task-table th, .task-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.task-table th {
+    background-color: #0056b3;
+    color: white;
+}
+
+/* ✅ Status Styling */
+.status-completed {
+    color: green;
+    font-weight: bold;
+}
+
+.status-in-progress {
+    color: blue;
+    font-weight: bold;
+}
+
+.status-pending {
+    color: orange;
+    font-weight: bold;
+}

@@ -1,0 +1,56 @@
+/* ✅ Work Tracking Page Styling */
+.work-tracking-container {
+    width: 90%;
+    margin: 20px auto;
+    text-align: center;
+    margin-left: -120px;
+    margin-right: 120px;
+}
+
+.work-tracking-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* ✅ Table Styling */
+.work-tracking-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.work-tracking-table th, 
+.work-tracking-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* ✅ Header Row */
+.work-tracking-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+/* ✅ Alternating Row Colors */
+.work-tracking-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* ✅ Hover Effect */
+.work-tracking-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* ✅ Status Colors */
+.status-completed {
+    color: green;
+    font-weight: bold;
+}
+
+.status-incomplete {
+    color: red;
+    font-weight: bold;
+}
