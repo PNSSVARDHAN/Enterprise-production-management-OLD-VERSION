@@ -6,7 +6,7 @@ const OfficeDashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/dashboard/office")
+        axios.get(`${process.env.REACT_APP_API_URL}/api/dashboard/office`)
             .then((response) => setDashboardData(response.data))
             .catch((error) => console.error("❌ Error fetching office dashboard data:", error));
     }, []);

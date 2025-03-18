@@ -11,7 +11,7 @@ const Orders = () => {
 
     // ✅ Fetch all orders with progress
     useEffect(() => {
-        axios.get("http://localhost:5000/api/orders/progress") 
+        axios.get(`${process.env.REACT_APP_API_URL}/api/orders/progress`) 
             .then((response) => {
                 console.log("📦 Orders Progress Fetched:", response.data);
                 setOrders(response.data);
@@ -40,7 +40,7 @@ const Orders = () => {
     const deleteOrder = (id) => {
         if (!window.confirm("⚠️ Are you sure you want to delete this order?")) return;
 
-        axios.delete(`http://localhost:5000/api/orders/${id}`)
+        axios.delete(`${process.env.REACT_APP_API_URL}/api/orders/${id}`)
             .then(response => {
                 console.log(response.data.message);
                 setOrders(orders.filter(order => order.id !== id)); // ✅ Remove from UI

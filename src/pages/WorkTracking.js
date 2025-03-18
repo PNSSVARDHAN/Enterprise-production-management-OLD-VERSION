@@ -14,7 +14,7 @@ const WorkTracking = () => {
     }, []);
 
     const fetchTasks = () => {
-        axios.get("http://localhost:5000/api/employee-tasks/assigned")
+        axios.get(`${process.env.REACT_APP_API_URL}/api/employee-tasks/assigned`)
             .then(response => setEmployeeTasks(response.data))
             .catch(error => console.error("Error fetching tasks:", error));
     };

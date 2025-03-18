@@ -9,7 +9,7 @@ const AddEmployee = () => {
     // ✅ Fetch the latest scanned RFID
     const fetchLatestRFID = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/employees/latest-scan");
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/employees/latest-scan`);
             console.log("✅ Latest RFID Fetched:", response.data);
             setLatestRFID(response.data.rfid || "No recent scan found");
         } catch (error) {
@@ -30,7 +30,7 @@ const AddEmployee = () => {
         }
 
         try {
-            await axios.post("http://localhost:5000/api/employees/register", { name, rfid: latestRFID });
+            await axios.post(`${process.env.REACT_APP_API_URL}/api/employees/register`, { name, rfid: latestRFID });
             alert("✅ Employee registered successfully!");
             setName("");
             setLatestRFID(null);

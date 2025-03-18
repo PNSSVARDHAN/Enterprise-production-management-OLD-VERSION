@@ -13,14 +13,14 @@ const AssignEmployee = () => {
 
     // ✅ Fetch Orders with Assigned Machines
     useEffect(() => {
-        axios.get("http://localhost:5000/api/orders/assigned-machines")
+        axios.get(`${process.env.REACT_APP_API_URL}/api/orders/assigned-machines`)
             .then(response => setOrders(response.data))
             .catch(error => console.error("❌ Error fetching orders:", error));
     }, []);
 
     // ✅ Fetch Employees for Selection
     useEffect(() => {
-        axios.get("http://localhost:5000/api/employees/")
+        axios.get(`${process.env.REACT_APP_API_URL}/api/employees/`)
             .then(response => setEmployees(response.data))
             .catch(error => console.error("❌ Error fetching employees:", error));
     }, []);
@@ -41,8 +41,8 @@ const AssignEmployee = () => {
         }
     
         const apiEndpoint = selectedTask.task_id 
-            ? `http://localhost:5000/api/employee-tasks/update/${selectedTask.task_id}`  
-            : "http://localhost:5000/api/employee-tasks/assign"; 
+            ? `${process.env.REACT_APP_API_URL}/api/employee-tasks/update/${selectedTask.task_id}`  
+            : `${process.env.REACT_APP_API_URL}/api/employee-tasks/assign`; 
     
         axios.post(apiEndpoint, {
             employee_id: selectedEmployee,

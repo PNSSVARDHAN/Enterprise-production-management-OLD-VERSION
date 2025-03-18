@@ -6,7 +6,7 @@ const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/employees/")
+        axios.get(`${process.env.REACT_APP_API_URL}/api/employees/`)
             .then(response => setEmployees(response.data))
             .catch(error => console.error("Error fetching employees:", error));
     }, []);
@@ -14,7 +14,7 @@ const EmployeeList = () => {
     const deleteEmployee = (id) => {
         if (!window.confirm("⚠️ Are you sure you want to delete this employee?")) return;
 
-        axios.delete(`http://localhost:5000/api/employees/${id}`)
+        axios.delete(`${process.env.REACT_APP_API_URL}/api/employees/${id}`)
             .then(response => {
                 console.log(response.data.message);
                 setEmployees(employees.filter(emp => emp.id !== id)); // ✅ Remove from UI

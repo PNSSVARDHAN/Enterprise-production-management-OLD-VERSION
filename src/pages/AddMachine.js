@@ -8,7 +8,7 @@ const AddMachine = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.post("http://localhost:5000/api/machines/add", { machine_number: machineNumber })
+        axios.post(`${process.env.REACT_APP_API_URL}/api/machines/add`, { machine_number: machineNumber })
             .then(() => {
                 alert("✅ Machine added successfully!");
                 setMachineNumber("");

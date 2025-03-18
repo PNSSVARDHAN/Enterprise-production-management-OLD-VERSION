@@ -90,7 +90,7 @@ const AssignMachine = ({ stepId, onClose }) => {
 
     const fetchMachines = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/machines/");
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/machines/`);
             console.log("✅ Machines Fetched:", response.data);
             setMachines(response.data);
         } catch (error) {
@@ -100,7 +100,7 @@ const AssignMachine = ({ stepId, onClose }) => {
 
     const fetchAssignedMachines = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/machine-allocations/");
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/machine-allocations/`);
             console.log("🔴 Assigned Machines:", response.data);
             setAssignedMachines(response.data);
         } catch (error) {
@@ -123,7 +123,7 @@ const AssignMachine = ({ stepId, onClose }) => {
                 machine_id: selectedMachine 
             });
 
-            await axios.post("http://localhost:5000/api/machine-allocations/assign", {
+            await axios.post(`${process.env.REACT_APP_API_URL}/api/machine-allocations/assign`, {
                 order_id: stepId.order_id,
                 step: stepId.step,
                 machine_id: selectedMachine

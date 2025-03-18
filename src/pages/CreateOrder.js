@@ -33,7 +33,7 @@ const CreateOrder = () => {
             steps,
         };
 
-        axios.post("http://localhost:5000/api/orders/add", newOrder)
+        axios.post(`${process.env.REACT_APP_API_URL}/api/orders/add`, newOrder)
             .then(() => {
                 alert("Order created successfully!");
                 setOrderNumber("");
