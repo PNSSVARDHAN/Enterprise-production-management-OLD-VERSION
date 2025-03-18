@@ -46,3 +46,11 @@ After running this command, the frontend will be available at:
 
 This file will ensure proper documentation for setting up the **SMO Frontend** on any system. 🚀
 ```
+
+
+
+how to connect to railway database to pgadmin
+
+
+
+

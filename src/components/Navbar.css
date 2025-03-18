@@ -98,3 +98,15 @@
     margin-left: 60px;
     width: calc(100% - 60px);
 }
+
+/* ✅ When navbar is collapsed, center icons properly */
+.navbar.collapsed .nav-link {
+    justify-content: center;
+    text-align: center;
+}
+
+/* ✅ Ensure icons are centered inside the link */
+.navbar.collapsed .nav-link svg {
+    margin: 0 auto;  /* Center horizontally */
+    display: block;
+}
