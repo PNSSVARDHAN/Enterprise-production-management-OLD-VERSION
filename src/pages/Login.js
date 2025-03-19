@@ -38,6 +38,12 @@ const Login = ({ setAuth }) => {
 
             {/* ✅ Login Box */}
             <div className="login-box">
+            <div className="testing-notice">
+                    <strong>THE APPLICATION IS UNDER TESTING PHASE</strong> <br />
+                    Username: <b>test@gmail.com</b> <br />
+                    Password: <b>123456789</b> <br />
+                    Please enter the details to log in.
+                </div>
                 <h2>Welcome Back</h2>
                 <p className="subtitle">Sign in to continue</p>
                 {error && <p className="error-message">{error}</p>}
