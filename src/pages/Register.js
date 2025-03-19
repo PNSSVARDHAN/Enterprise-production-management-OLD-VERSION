@@ -15,7 +15,7 @@ const Register = () => {
         setError("");
 
         try {
-            await axios.post("https://smo-backend-production.up.railway.app/api/auth/register", { name, email, password });
+            await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, { name, email, password });
             navigate("/login");  // ✅ Redirect to login page after success
 
         } catch (err) {
