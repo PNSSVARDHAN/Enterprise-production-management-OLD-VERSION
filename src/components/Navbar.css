@@ -50,14 +50,30 @@
     white-space: nowrap;
 }
 
-/* ✅ Toggle Button */
+/* ✅ Toggle Button Styles */
 .toggle-button {
-    background: transparent;
-    border: none;
+    background: none !important;  /* Removes background */
+    border: none !important;      /* Removes border */
+    color: rgb(0, 0, 0) !important;      /* Set icon color */
     font-size: 24px;
     cursor: pointer;
-    margin-bottom: 10px;
+    padding: 10px;
 }
+
+/* ✅ Remove background on hover */
+.toggle-button:hover {
+    background: transparent !important;
+}
+
+/* ✅ Remove blue background on focus/click */
+.toggle-button:focus, 
+.toggle-button:active {
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
 
 /* ✅ Navigation Links */
 .link-container {
@@ -109,4 +125,28 @@
 .navbar.collapsed .nav-link svg {
     margin: 0 auto;  /* Center horizontally */
     display: block;
+}
+
+.logout-btn {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 10px 15px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logout-btn:hover {
+    background-color: #ffffff;
+}
+
+.nav-text {
+    margin-left: 8px;
 }
