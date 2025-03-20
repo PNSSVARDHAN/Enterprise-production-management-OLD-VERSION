@@ -16,14 +16,21 @@ function Layout({ auth, setAuth }) {
     const location = useLocation();
     const hideNavbar = location.pathname === "/login" || location.pathname === "/register";
 
+    // ✅ Save last visited page (excluding login & register)
+    useEffect(() => {
+        if (auth && location.pathname !== "/login" && location.pathname !== "/register") {
+            localStorage.setItem("lastVisited", location.pathname);
+        }
+    }, [auth, location.pathname]);
+
     return (
         <div className="layout">
             {!hideNavbar && <Navbar setAuth={setAuth} />} {/* ✅ Pass setAuth */}
             <div className="content">
                 <Routes>
-                    <Route path="/" element={<Navigate to={auth ? "/orders" : "/login"} />} />
-                    <Route path="/login" element={auth ? <Navigate to="/orders" /> : <Login setAuth={setAuth} />} />
-                    <Route path="/register" element={auth ? <Navigate to="/orders" /> : <Register />} />
+                    <Route path="/" element={<Navigate to={auth ? localStorage.getItem("lastVisited") || "/orders" : "/login"} />} />
+                    <Route path="/login" element={auth ? <Navigate to={localStorage.getItem("lastVisited") || "/orders"} /> : <Login setAuth={setAuth} />} />
+                    <Route path="/register" element={auth ? <Navigate to={localStorage.getItem("lastVisited") || "/orders"} /> : <Register />} />
 
                     {/* ✅ Protect routes */}
                     <Route path="/orders" element={auth ? <Orders /> : <Navigate to="/login" />} />
