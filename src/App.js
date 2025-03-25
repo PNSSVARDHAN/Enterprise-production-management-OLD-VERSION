@@ -11,6 +11,7 @@ import AssignEmployee from "./pages/AssignEmployee";
 import OfficeDashboard from "./pages/OfficeDashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import EmployeeProductivityGraphs from "./pages/EmployeeProductivityGraphs";
 
 function Layout({ auth, setAuth }) {
     const location = useLocation();
@@ -41,6 +42,7 @@ function Layout({ auth, setAuth }) {
                     <Route path="/create-order" element={auth ? <CreateOrder /> : <Navigate to="/login" />} />
                     <Route path="/assign-employee" element={auth ? <AssignEmployee /> : <Navigate to="/login" />} />
                     <Route path="/office-dashboard" element={auth ? <OfficeDashboard /> : <Navigate to="/login" />} />
+                    <Route path="/productivity" element={<EmployeeProductivityGraphs />} />
                 </Routes>
             </div>
         </div>

@@ -36,6 +36,7 @@ const Navbar = ({ setAuth }) => {
                     <NavItem to="/add-machine" icon={<FaIndustry />} text="Add Machine" collapsed={collapsed} />
                     <NavItem to="/create-order" icon={<FaPlus />} text="Create Order" collapsed={collapsed} />
                     <NavItem to="/assign-employee" icon={<FaCogs />} text="Assign Employee" collapsed={collapsed} />
+                    <NavItem to="/productivity" icon={<span role="img" aria-label="graphs">📊</span>} text="Productivity Graphs" collapsed={collapsed} />
                 </div>
 
                 {/* ✅ Logout Button */}

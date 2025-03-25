@@ -88,10 +88,11 @@ const AssignMachine = ({ stepId, onClose }) => {
         }
     };
 
-    // ✅ Organizing Machines into Lines (6 Lines, 50 Machines Each)
+    // ✅ Organizing Machines into Lines (Fixed Allocation) in Ascending Order
+    const sortedMachines = [...machines].sort((a, b) => a.id - b.id);
     const lines = [];
     for (let i = 0; i < 6; i++) {
-        lines.push(machines.slice(i * 50, (i + 1) * 50));
+        lines.push(sortedMachines.slice(1015 + i * 50 - 1015, 1065 + i * 50 - 1015));
     }
 
     return (

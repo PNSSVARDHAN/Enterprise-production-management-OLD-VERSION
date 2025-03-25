@@ -61,8 +61,10 @@ const Orders = () => {
                     <thead>
                         <tr>
                             <th>Order ID</th>
+                            <th>order Number</th>
                             <th>Product</th>
                             <th>Quantity</th>
+                            <th>Status</th>
                             <th>Action</th>
                             <th>Delete</th>
                         </tr>
@@ -71,8 +73,10 @@ const Orders = () => {
                         {orders.map(order => (
                             <tr key={order.id}>
                                 <td>{order.id}</td>
+                                <td>{order.order_number}</td>
                                 <td>{order.product}</td>
                                 <td>{order.quantity}</td>
+                                <td>{order.status}</td>
                                 <td>
                                     <button onClick={() => fetchOrderSteps(order.id)} className="view-steps-button">
                                         View Steps
