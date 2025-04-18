@@ -1,12 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
-import "./AddEmployee.css"; // ✅ Import the CSS
+import "bootstrap/dist/css/bootstrap.min.css"; // ✅ Ensure Bootstrap is imported
+import "./AddEmployee.css"; // ✅ Your custom tweaks if needed
 
 const AddEmployee = () => {
     const [latestRFID, setLatestRFID] = useState(null);
     const [name, setName] = useState("");
 
-    // ✅ Fetch the latest scanned RFID
     const fetchLatestRFID = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/employees/latest-scan`);
@@ -18,7 +18,6 @@ const AddEmployee = () => {
         }
     };
 
-    // ✅ Register Employee with latest RFID
     const handleRegister = async () => {
         if (!latestRFID || latestRFID === "No recent scan found") {
             alert("⚠️ No RFID scan available!");
@@ -41,18 +40,39 @@ const AddEmployee = () => {
     };
 
     return (
-        <div className="add-employee-container">
-            <h1>Add Employee</h1>
-            <button className="button fetch-rfid-button" onClick={fetchLatestRFID}>📡 Fetch Latest RFID</button>
-            <p className="rfid-display"><b>Latest RFID:</b> {latestRFID || "No scan yet"}</p>
-            <input 
-                type="text" 
-                className="input-field"
-                placeholder="Enter Employee Name" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-            />
-            <button className="button register-button" onClick={handleRegister}>✅ Register Employee</button>
+        <div className="container-Addemployee my-5">
+            <div className="card shadow p-4">
+                <h1 className="mb-4 text-center">Add Employee</h1>
+
+                <div className="d-grid gap-2 mb-3">
+                    <button className="btn btn-primary" onClick={fetchLatestRFID}>
+                        📡 Fetch Latest RFID
+                    </button>
+                </div>
+
+                <div className="mb-3 text-center">
+                    <p className="fw-bold">
+                        Latest RFID:{" "}
+                        <span className="text-success">{latestRFID || "No scan yet"}</span>
+                    </p>
+                </div>
+
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Employee Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </div>
+
+                <div className="d-grid gap-2">
+                    <button className="btn btn-success" onClick={handleRegister}>
+                        ✅ Register Employee
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

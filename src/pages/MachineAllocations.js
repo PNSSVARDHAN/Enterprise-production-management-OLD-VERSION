@@ -5,10 +5,12 @@ const MachineAllocations = ({ machineAllocations }) => {
     const [selectedMachineAllocation, setSelectedMachineAllocation] = useState(null);
 
     return (
-        <div>
+        <div className="container mt-4">
             <h2>Machine Allocations</h2>
-            <table style={styles.table}>
-                <thead>
+            
+            {/* Bootstrap Table */}
+            <table className="table table-bordered table-striped">
+                <thead className="thead-dark">
                     <tr>
                         <th>Order ID</th>
                         <th>Step</th>
@@ -25,7 +27,7 @@ const MachineAllocations = ({ machineAllocations }) => {
                             <td>
                                 <button 
                                     onClick={() => setSelectedMachineAllocation(allocation.id)} 
-                                    style={styles.assignButton}
+                                    className="btn btn-primary"
                                 >
                                     Assign Employee
                                 </button>
@@ -35,6 +37,7 @@ const MachineAllocations = ({ machineAllocations }) => {
                 </tbody>
             </table>
 
+            {/* Conditional Rendering for AssignEmployee Component */}
             {selectedMachineAllocation && (
                 <AssignEmployee 
                     machineAllocationId={selectedMachineAllocation}
@@ -43,12 +46,6 @@ const MachineAllocations = ({ machineAllocations }) => {
             )}
         </div>
     );
-};
-
-// ✅ CSS Styles
-const styles = {
-    table: { width: "100%", marginTop: "20px", borderCollapse: "collapse" },
-    assignButton: { padding: "8px", backgroundColor: "#007bff", color: "white", border: "none", cursor: "pointer" },
 };
 
 export default MachineAllocations;

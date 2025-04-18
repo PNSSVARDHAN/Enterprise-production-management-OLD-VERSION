@@ -6,6 +6,7 @@ import "chart.js/auto";
 const EmployeeProductivityGraphs = () => {
     const [orders, setOrders] = useState([]);
     const [expandedOrder, setExpandedOrder] = useState(null);  // 🚀 Track which order is expanded
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchProductivityData();
@@ -17,23 +18,19 @@ const EmployeeProductivityGraphs = () => {
             const formattedOrders = response.data.map(order => ({
                 order_id: order.id,
                 order_number: order.order_number,
-
                 timePerPiece: order.MachineAllocations.flatMap(machine =>
                     machine.EmployeeTasks.map(task => ({
                         employee_id: task.employee_id,
                         time_per_piece: task.total_completed ? (8 * 60) / task.total_completed : 0
                     }))
                 ),
-
                 totalPieces: order.MachineAllocations.flatMap(machine =>
                     machine.EmployeeTasks.map(task => ({
                         employee_id: task.employee_id,
                         total_completed: Number(task.total_completed) || 0
                     }))
                 ),
-
                 hourlyTrend: [],  // Placeholder for hourly data
-
                 employeePerformance: order.MachineAllocations.flatMap(machine =>
                     machine.EmployeeTasks.map(task => ({
                         employee_id: task.employee_id,
@@ -41,10 +38,11 @@ const EmployeeProductivityGraphs = () => {
                     }))
                 )
             }));
-
             setOrders(formattedOrders);
         } catch (error) {
             console.error("❌ Error fetching productivity data:", error);
+        } finally {
+            setLoading(false); // Set loading to false after data is fetched
         }
     };
 
@@ -56,7 +54,9 @@ const EmployeeProductivityGraphs = () => {
         <div style={styles.container}>
             <h2 style={styles.heading}>Employee Productivity Analysis</h2>
 
-            {orders.length > 0 ? (
+            {loading ? (
+                <p style={styles.noData}>Loading data...</p>
+            ) : orders.length > 0 ? (
                 orders.map((order) => (
                     <div key={order.order_id} style={styles.orderContainer}>
                         {/* ✅ Clickable Order Name */}
@@ -64,52 +64,60 @@ const EmployeeProductivityGraphs = () => {
                             style={styles.orderHeading}
                             onClick={() => toggleOrder(order.order_id)}
                         >
-                            {order.order_number} ▼
+                            {order.order_number} {expandedOrder === order.order_id ? "▲" : "▼"}
                         </h3>
 
                         {/* ✅ Show graphs only when expanded */}
                         {expandedOrder === order.order_id && (
                             <div style={styles.chartWrapper}>
-                                <Line data={{
-                                    labels: order.timePerPiece?.map(d => `Emp ${d.employee_id}`),
-                                    datasets: [{
-                                        label: "Avg. Time Taken per Piece (Minutes)",
-                                        data: order.timePerPiece?.map(d => parseFloat(d.time_per_piece) || 0),
-                                        borderColor: "cyan",
-                                        backgroundColor: "rgba(0, 255, 255, 0.5)",
-                                        borderWidth: 2
-                                    }]
-                                }}/>
+                                <Line
+                                    data={{
+                                        labels: order.timePerPiece?.map(d => `Emp ${d.employee_id}`),
+                                        datasets: [{
+                                            label: "Avg. Time Taken per Piece (Minutes)",
+                                            data: order.timePerPiece?.map(d => parseFloat(d.time_per_piece) || 0),
+                                            borderColor: "cyan",
+                                            backgroundColor: "rgba(0, 255, 255, 0.5)",
+                                            borderWidth: 2
+                                        }]
+                                    }}
+                                />
 
-                                <Bar data={{
-                                    labels: order.totalPieces?.map(d => `Emp ${d.employee_id}`),
-                                    datasets: [{
-                                        label: "Total Pieces Completed",
-                                        data: order.totalPieces?.map(d => d.total_completed),
-                                        backgroundColor: "orange"
-                                    }]
-                                }}/>
+                                <Bar
+                                    data={{
+                                        labels: order.totalPieces?.map(d => `Emp ${d.employee_id}`),
+                                        datasets: [{
+                                            label: "Total Pieces Completed",
+                                            data: order.totalPieces?.map(d => d.total_completed),
+                                            backgroundColor: "orange"
+                                        }]
+                                    }}
+                                />
 
-                                <Line data={{
-                                    labels: order.hourlyTrend?.map(d => d.hour_slot),
-                                    datasets: [{
-                                        label: "Hourly Productivity",
-                                        data: order.hourlyTrend?.map(d => d.hourly_completed),
-                                        borderColor: "lime",
-                                        backgroundColor: "rgba(0, 255, 0, 0.5)",
-                                        borderWidth: 2
-                                    }]
-                                }}/>
+                                <Line
+                                    data={{
+                                        labels: order.hourlyTrend?.map(d => d.hour_slot),
+                                        datasets: [{
+                                            label: "Hourly Productivity",
+                                            data: order.hourlyTrend?.map(d => d.hourly_completed),
+                                            borderColor: "lime",
+                                            backgroundColor: "rgba(0, 255, 0, 0.5)",
+                                            borderWidth: 2
+                                        }]
+                                    }}
+                                />
 
-                                <Radar data={{
-                                    labels: order.employeePerformance?.map(d => `Emp ${d.employee_id}`),
-                                    datasets: [{
-                                        label: "Performance",
-                                        data: order.employeePerformance?.map(d => d.total_completed),
-                                        backgroundColor: "rgba(255, 99, 132, 0.5)",
-                                        borderColor: "rgba(255, 99, 132, 1)"
-                                    }]
-                                }}/>
+                                <Radar
+                                    data={{
+                                        labels: order.employeePerformance?.map(d => `Emp ${d.employee_id}`),
+                                        datasets: [{
+                                            label: "Performance",
+                                            data: order.employeePerformance?.map(d => d.total_completed),
+                                            backgroundColor: "rgba(255, 99, 132, 0.5)",
+                                            borderColor: "rgba(255, 99, 132, 1)"
+                                        }]
+                                    }}
+                                />
                             </div>
                         )}
                     </div>
@@ -128,8 +136,6 @@ const styles = {
         color: "#000",
         maxWidth: "1000px",
         margin: "auto",
-        marginLeft: "-220px",
-        marginRight: "60px"
     },
     heading: {
         textAlign: "center",
@@ -155,7 +161,6 @@ const styles = {
         color: "#fff",
         borderRadius: "5px",
         transition: "background-color 0.3s",
-        textAlign: "center",
         marginBottom: "10px"
     },
     chartWrapper: {

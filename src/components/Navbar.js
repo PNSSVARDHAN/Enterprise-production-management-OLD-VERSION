@@ -1,63 +1,74 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { 
-    FaHome, FaClipboardList, FaUsers, FaTasks, 
-    FaPlus, FaIndustry, FaUserPlus, FaCogs, FaSignOutAlt 
+  FaHome, FaClipboardList, FaUsers, FaTasks, 
+  FaPlus, FaIndustry, FaUserPlus, FaCogs, FaSignOutAlt 
 } from "react-icons/fa";
-import "./Navbar.css"; // ✅ Import CSS file
+import "./Navbar.css"; // Import the CSS file
+import { Tooltip, OverlayTrigger } from "react-bootstrap"; // Import Bootstrap Tooltip
 
 const Navbar = ({ setAuth }) => {
-    const [collapsed, setCollapsed] = useState(false);
-    const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
-    // ✅ Logout function
-    const handleLogout = () => {
-        localStorage.removeItem("token"); // ✅ Remove token
-        setAuth(false); // ✅ Update auth state
-        navigate("/login"); // ✅ Redirect to login page
-    };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setAuth(false);
+    navigate("/login");
+  };
 
-    return (
-        <div className={`layout ${collapsed ? "collapsed" : ""}`}>
-            {/* ✅ Sidebar Navigation */}
-            <nav className={`navbar ${collapsed ? "collapsed" : ""}`}>
-                <h2 className="navbar-title">{collapsed ? "SMO" : "SMO Tracking System"}</h2>
+  return (
+    <div className="d-flex">
+        <nav className={`sidebar bg-dark text-white p-3 vh-100 ${collapsed ? "collapsed-navbar" : ""}`}>
+          <div className="d-flex align-items-center justify-content-center mb-4">
+            <h4 className="mb-0">{collapsed ? "SMO" : "SMO Tracking "}</h4>
+          </div>
+          <button className="btn btn-sm btn-outline-light toggle-btn d-block mx-auto" onClick={() => setCollapsed(!collapsed)}>
+          ☰
+            </button>
 
-                <button onClick={() => setCollapsed(!collapsed)} className="toggle-button">
-                    ☰
-                </button>
+          <ul className="nav flex-column text-center">
+            <NavItem to="/office-dashboard" icon={<FaHome />} text="Office Dashboard" collapsed={collapsed} />
+            <NavItem to="/orders" icon={<FaClipboardList />} text="Orders" collapsed={collapsed} />
+            <NavItem to="/employees" icon={<FaUsers />} text="Employees" collapsed={collapsed} />
+            <NavItem to="/work-tracking" icon={<FaTasks />} text="Work Tracking" collapsed={collapsed} />
+            <NavItem to="/add-employee" icon={<FaUserPlus />} text="Add Employee" collapsed={collapsed} />
+            <NavItem to="/add-machine" icon={<FaIndustry />} text="Add Machine" collapsed={collapsed} />
+            <NavItem to="/create-order" icon={<FaPlus />} text="Create Order" collapsed={collapsed} />
+            <NavItem to="/assign-employee" icon={<FaCogs />} text="Assign Employee" collapsed={collapsed} />
+            <NavItem to="/productivity" icon={<span role="img" aria-label="graphs">📊</span>} text="Productivity Graphs" collapsed={collapsed} />
+            <NavItem to="/production-flow" icon={<span role="img" aria-label="flow">🔄</span>} text="Production Flow" collapsed={collapsed} />
+          </ul>
 
-                <div className="link-container">
-                    <NavItem to="/office-dashboard" icon={<FaHome />} text="Office Dashboard" collapsed={collapsed} />
-                    <NavItem to="/orders" icon={<FaClipboardList />} text="Orders" collapsed={collapsed} />
-                    <NavItem to="/employees" icon={<FaUsers />} text="Employees" collapsed={collapsed} />
-                    <NavItem to="/work-tracking" icon={<FaTasks />} text="Work Tracking" collapsed={collapsed} />
-                    <NavItem to="/add-employee" icon={<FaUserPlus />} text="Add Employee" collapsed={collapsed} />
-                    <NavItem to="/add-machine" icon={<FaIndustry />} text="Add Machine" collapsed={collapsed} />
-                    <NavItem to="/create-order" icon={<FaPlus />} text="Create Order" collapsed={collapsed} />
-                    <NavItem to="/assign-employee" icon={<FaCogs />} text="Assign Employee" collapsed={collapsed} />
-                    <NavItem to="/productivity" icon={<span role="img" aria-label="graphs">📊</span>} text="Productivity Graphs" collapsed={collapsed} />
-                </div>
+          {/* Logout */}
+        <button className="btn btn-danger mt-auto w-100" onClick={handleLogout}>
+          <FaSignOutAlt /> {!collapsed && <span className="ms-2">Logout</span>}
+        </button>
+      </nav>
 
-                {/* ✅ Logout Button */}
-                <button className="logout-btn" onClick={handleLogout}>
-                    <FaSignOutAlt /> <span className="nav-text">{collapsed ? "" : "Logout"}</span>
-                </button>
-            </nav>
-
-            {/* ✅ Main Content Area (Adjusting based on collapsed state) */}
-            <div className={`content ${collapsed ? "expanded" : ""}`}>
-                {/* The child components (pages) will load here */}
-            </div>
-        </div>
-    );
+      {/* Content Area */}
+    </div>
+  );
 };
 
-// ✅ Navbar Item Component
-const NavItem = ({ to, icon, text, collapsed }) => (
-    <Link to={to} className="nav-link" title={text}>
-        {icon} <span className="nav-text">{collapsed ? "" : text}</span>
-    </Link>
-);
+// Navbar Item Component with Tooltip
+const NavItem = ({ to, icon, text, collapsed }) => {
+  return (
+    <li className="nav-item mb-2">
+      <OverlayTrigger
+        placement="right"
+        overlay={<Tooltip id={`tooltip-${text}`}>{text}</Tooltip>}
+      >
+        <NavLink 
+          to={to} 
+          className={`nav-link text-white d-flex align-items-center`}
+        >
+          {icon}
+          {!collapsed && <span className="ms-2">{text}</span>}
+        </NavLink>
+      </OverlayTrigger>
+    </li>
+  );
+};
 
 export default Navbar;

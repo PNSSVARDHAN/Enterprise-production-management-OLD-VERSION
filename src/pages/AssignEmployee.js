@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./AssignEmployee.css"; // ✅ Import the CSS
+import "bootstrap/dist/css/bootstrap.min.css"; // ✅ Ensure Bootstrap is imported
+import "./AssignEmployee.css"; // ✅ Your custom tweaks
 
 const AssignEmployee = () => {
     const [orders, setOrders] = useState([]);
@@ -82,82 +83,104 @@ const AssignEmployee = () => {
             alert("❌ Failed to update task.");
         });
     };
-    
-    
 
     return (
-        <div className="assign-employee-container">
-            <h1>Assign Employee</h1>
+        <div className="container-AssignEmployee my-5">
+            <h1 className="text-center mb-4">Assign Employee</h1>
 
             {orders.map(order => (
-                <div key={order.id} className="order-box">
-                    <h2>Order {order.id} - {order.product}</h2>
-                    
-                    <div className="steps-container">
-                        {order.MachineAllocations.map(machine => (
-                            <div key={machine.id} className="step-box">
-                                <p><b>Step:</b> {machine.step}</p>
-                                <p><b>Machine:</b> {machine.machine_id}</p>
+                <div key={order.id} className="card mb-4 shadow-sm">
+                    <div className="card-body">
+                        <h5 className="card-title">Order {order.id} - {order.product}</h5>
+                        
+                        <div className="row">
+                            {order.MachineAllocations.map(machine => (
+                                <div key={machine.id} className="col-12 col-md-6 col-lg-4 mb-4">
+                                    <div className="step-box border p-3 rounded">
+                                        <p><b>Step:</b> {machine.step}</p>
+                                        <p><b>Machine:</b> {machine.machine_id}</p>
 
-                                {machine.EmployeeTasks.length > 0 ? (
-                                    <div>
-                                        <p><b>Assigned:</b> {machine.EmployeeTasks[0].Employee.name}</p>
-                                        <p><b>Target:</b> {machine.EmployeeTasks[0].target}</p>
-                                        <p><b>Status:</b> {machine.EmployeeTasks[0].status}</p>
-                                        
-                                        {machine.EmployeeTasks[0].status === "Completed" ? (
-                                            <p className="completed">✅ Completed</p>
+                                        {machine.EmployeeTasks.length > 0 ? (
+                                            <div>
+                                                <p><b>Assigned:</b> {machine.EmployeeTasks[0].Employee.name}</p>
+                                                <p><b>Target:</b> {machine.EmployeeTasks[0].target}</p>
+                                                <p><b>Status:</b> {machine.EmployeeTasks[0].status}</p>
+                                                
+                                                {machine.EmployeeTasks[0].status === "Completed" ? (
+                                                    <p className="text-success">✅ Completed</p>
+                                                ) : (
+                                                    <button 
+                                                        onClick={() => openEditModal(machine, machine.EmployeeTasks[0])} 
+                                                        className="btn btn-warning btn-sm">
+                                                        Edit Task
+                                                    </button>
+                                                )}
+                                            </div>
                                         ) : (
                                             <button 
-                                                onClick={() => openEditModal(machine, machine.EmployeeTasks[0])} 
-                                                className="edit-button"
-                                            >
-                                                Edit Task
+                                                onClick={() => setSelectedTask(machine)} 
+                                                className="btn btn-primary btn-sm">
+                                                Assign Employee
                                             </button>
                                         )}
                                     </div>
-                                ) : (
-                                    <button onClick={() => setSelectedTask(machine)} className="assign-button">
-                                        Assign Employee
-                                    </button>
-                                )}
-                            </div>
-                        ))}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             ))}
 
             {selectedTask && (
-                <div className="modal">
-                    <h2>Assign Employee to Machine {selectedTask.machine_id} (Step: {selectedTask.step})</h2>
+                <div className="modal d-block show" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Assign Employee to Machine {selectedTask.machine_id} (Step: {selectedTask.step})</h5>
+                                <button onClick={() => setSelectedTask(null)} className="btn-close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <label>Select Employee:</label>
+                                <input 
+                                    type="text" 
+                                    className="form-control mb-3" 
+                                    placeholder="Search employee..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
 
-                    <label>Select Employee:</label>
-                    <select value={selectedEmployee} onChange={(e) => setSelectedEmployee(e.target.value)} className="input">
-                        <option value="">-- Select Employee --</option>
-                        {employees
-                            .filter(emp => emp.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                            .map(emp => (
-                                <option key={emp.id} value={emp.id}>{emp.name}</option>
-                            ))
-                        }
-                    </select>
+                                <select 
+                                    value={selectedEmployee} 
+                                    onChange={(e) => setSelectedEmployee(e.target.value)} 
+                                    className="form-select mb-3">
+                                    <option value="">-- Select Employee --</option>
+                                    {employees
+                                        .filter(emp => emp.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                                        .map(emp => (
+                                            <option key={emp.id} value={emp.id}>{emp.name}</option>
+                                        ))}
+                                </select>
 
-                    <label>Target:</label>
-                    <input 
-                        type="number" 
-                        value={target} 
-                        onChange={(e) => setTarget(e.target.value)} 
-                        className="input"
-                    />
+                                <label>Target:</label>
+                                <input 
+                                    type="number" 
+                                    value={target} 
+                                    onChange={(e) => setTarget(e.target.value)} 
+                                    className="form-control mb-3"
+                                />
 
-                    <label>Duration:</label>
-                    <select value={duration} onChange={(e) => setDuration(e.target.value)} className="input">
-                        <option value="One Day">One Day</option>
-                        <option value="Multiple Days">Multiple Days</option>
-                    </select>
-
-                    <button onClick={handleAssign} className="save-button">Save Changes</button>
-                    <button onClick={() => setSelectedTask(null)} className="close-button">Cancel</button>
+                                <label>Duration:</label>
+                                <select value={duration} onChange={(e) => setDuration(e.target.value)} className="form-select mb-3">
+                                    <option value="One Day">One Day</option>
+                                    <option value="Multiple Days">Multiple Days</option>
+                                </select>
+                            </div>
+                            <div className="modal-footer">
+                                <button onClick={handleAssign} className="btn btn-success">Save Changes</button>
+                                <button onClick={() => setSelectedTask(null)} className="btn btn-secondary">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

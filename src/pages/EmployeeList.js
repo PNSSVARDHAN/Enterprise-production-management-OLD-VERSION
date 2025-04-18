@@ -24,31 +24,39 @@ const EmployeeList = () => {
                 alert("❌ Failed to delete employee!");
             });
     };
+
     return (
-        <div className="employee-container">
-            <h1>Employee List</h1>
-            <table className="employee-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>RFID</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {employees.map(emp => (
-                        <tr key={emp.id}>
-                            <td>{emp.id}</td>
-                            <td>{emp.name}</td>
-                            <td>{emp.rfid}</td>
-                            <td>
-                                <button className="delete-button" onClick={() => deleteEmployee(emp.id)}>Delete</button>
-                            </td>
+        <div className="container-fluid employee-container">
+            <h1 className="text-center mb-4">Employee List</h1>
+            <div className="table-responsive">
+                <table className="table table-bordered table-hover">
+                    <thead className="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>RFID</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {employees.map(emp => (
+                            <tr key={emp.id}>
+                                <td>{emp.id}</td>
+                                <td>{emp.name}</td>
+                                <td>{emp.rfid}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => deleteEmployee(emp.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

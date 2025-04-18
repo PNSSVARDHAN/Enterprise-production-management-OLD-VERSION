@@ -3,7 +3,7 @@
 .layout {
     display: flex;
     height: 100vh;
-    position: relative;
+    position: relative;;
 }
 
 /* ✅ Background Image with Opacity */
@@ -22,127 +22,6 @@
     z-index: -1;
 }
 
-/* ✅ Sidebar Navigation */
-.navbar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-    border-right: 1px solid #ddd;
-    width: 200px;
-    transition: width 0.3s;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    overflow: hidden;
-}
-
-.navbar.collapsed {
-    width: 60px;
-}
-
-/* ✅ Navbar Title */
-.navbar-title {
-    font-size: 18px;
-    text-align: center;
-    padding: 10px;
-    white-space: nowrap;
-}
-
-/* ✅ Toggle Button Styles */
-.toggle-button {
-    background: none !important;  /* Removes background */
-    border: none !important;      /* Removes border */
-    color: rgb(0, 0, 0) !important;      /* Set icon color */
-    font-size: 24px;
-    cursor: pointer;
-    padding: 10px;
-}
-
-/* ✅ Remove background on hover */
-.toggle-button:hover {
-    background: transparent !important;
-}
-
-/* ✅ Remove blue background on focus/click */
-.toggle-button:focus, 
-.toggle-button:active {
-    outline: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-}
-
-
-/* ✅ Navigation Links */
-.link-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.nav-link {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    color: #333;
-    text-decoration: none;
-    font-size: 16px;
-    width: 100%;
-    transition: background 0.3s;
-}
-
-.nav-link:hover {
-    background-color: #f0f0f0;
-}
-
-.nav-text {
-    margin-left: 10px;
-}
-
-/* ✅ Main Content Area */
-.content {
-    flex: 1;
-    margin-left: 200px; /* ✅ Pushes content to the right */
-    padding: 20px;
-    width: calc(100% - 200px);
-    transition: margin-left 0.3s, width 0.3s;
-}
-
-.navbar.collapsed + .content {
-    margin-left: 60px;
-    width: calc(100% - 60px);
-}
-
-/* ✅ When navbar is collapsed, center icons properly */
-.navbar.collapsed .nav-link {
-    justify-content: center;
-    text-align: center;
-}
-
-/* ✅ Ensure icons are centered inside the link */
-.navbar.collapsed .nav-link svg {
-    margin: 0 auto;  /* Center horizontally */
-    display: block;
-}
-
-.logout-btn {
-    background-color: #ffffff;
-    color: rgb(0, 0, 0);
-    border: none;
-    padding: 10px 15px;
-    margin: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .logout-btn:hover {
     background-color: #ffffff;
 }
@@ -150,3 +29,54 @@
 .nav-text {
     margin-left: 8px;
 }
+/* Sidebar styles */
+.sidebar {
+    transition: width 0.3s ease;
+    width: 250px;
+  }
+  
+  .collapsed-navbar {
+    width: 80px;
+  }
+  
+  .sidebar .toggle-btn {
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px -15px;
+  }
+  
+  .sidebar .nav-item:hover {
+    background-color: #555;
+  }
+  
+  .navbar-title {
+    font-size: 1.5rem;
+  }
+  
+  /* Tooltip styles for the hover effect */
+  .tooltip-inner {
+    background-color: #333;
+    color: #ffffff;
+  }
+  
+  .nav-item {
+    position: relative;
+  }
+  
+  .navbar-title {
+    transition: opacity 0.3s ease;
+  }
+  
+  .sidebar .nav-link .ms-2 {
+    transition: opacity 0.3s ease;
+  }
+  
+  /* When collapsed, hide page names */
+  .collapsed-navbar .nav-link .ms-2 {
+    display: none;
+  }
+  

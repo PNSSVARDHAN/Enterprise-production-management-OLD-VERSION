@@ -46,45 +46,64 @@ const CreateOrder = () => {
     };
 
     return (
-        <div className="create-order-container">
-            <h1>Create Order</h1>
-            <form onSubmit={handleSubmit} className="create-order-form">
-                <input
-                    type="text"
-                    placeholder="Order Number"
-                    value={orderNumber}
-                    onChange={(e) => setOrderNumber(e.target.value)}
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Product Name"
-                    value={product}
-                    onChange={(e) => setProduct(e.target.value)}
-                    required
-                />
-                <input
-                    type="number"
-                    placeholder="Quantity"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    required
-                />
-                <input
-                    type="number"
-                    placeholder="Number of Steps"
-                    value={stepCount}
-                    onChange={(e) => setStepCount(parseInt(e.target.value) || 0)}
-                    required
-                />
-                <button type="button" onClick={generateStepFields} className="create-order-button">
-                    Generate Steps
-                </button>
+        <div className="container-fluid create-order-container">
+            <h1 className="text-center mb-4">Create Order</h1>
+            <form onSubmit={handleSubmit} className="create-order-form row g-3">
+                <div className="col-12 col-md-6">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Order Number"
+                        value={orderNumber}
+                        onChange={(e) => setOrderNumber(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="col-12 col-md-6">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Product Name"
+                        value={product}
+                        onChange={(e) => setProduct(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="col-12 col-md-6">
+                    <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Quantity"
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="col-12 col-md-6">
+                    <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Number of Steps"
+                        value={stepCount}
+                        onChange={(e) => setStepCount(parseInt(e.target.value) || 0)}
+                        required
+                    />
+                </div>
+                <div className="col-12">
+                    <button
+                        type="button"
+                        onClick={generateStepFields}
+                        className="btn btn-primary w-100"
+                    >
+                        Generate Steps
+                    </button>
+                </div>
 
                 {steps.map((step, index) => (
-                    <div key={index} className="step-container">
+                    <div key={index} className="col-12 mb-3">
                         <input
                             type="text"
+                            className="form-control"
                             placeholder={`Step ${index + 1} Name`}
                             value={step.name}
                             onChange={(e) => handleStepChange(index, "name", e.target.value)}
@@ -93,7 +112,11 @@ const CreateOrder = () => {
                     </div>
                 ))}
 
-                <button type="submit" className="create-order-button">Create Order</button>
+                <div className="col-12">
+                    <button type="submit" className="btn btn-success w-100">
+                        Create Order
+                    </button>
+                </div>
             </form>
         </div>
     );

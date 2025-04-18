@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./WorkTracking.css"; // ✅ Import CSS
+import "bootstrap/dist/css/bootstrap.min.css"; 
+import "./WorkTracking.css"// ✅ Ensure Bootstrap is imported
 
 const WorkTracking = () => {
     const [employeeTasks, setEmployeeTasks] = useState([]);
@@ -20,13 +21,15 @@ const WorkTracking = () => {
     };
 
     return (
-        <div className="work-tracking-container">
-            <h1>Work Tracking</h1>
+        <div className="container-worktracking mt-4">
+            <h1 className="mb-4">Work Tracking</h1>
             {employeeTasks.length === 0 ? (
-                <p>No active tasks assigned.</p>
+                <div className="alert alert-warning" role="alert">
+                    No active tasks assigned.
+                </div>
             ) : (
-                <table className="work-tracking-table">
-                    <thead>
+                <table className="table table-striped table-bordered table-responsive">
+                    <thead className="thead-dark">
                         <tr>
                             <th>Employee</th>
                             <th>Machine</th>
@@ -42,7 +45,7 @@ const WorkTracking = () => {
                                 <td>{task.MachineAllocation?.machine_id}</td>
                                 <td>{task.target}</td>
                                 <td>{task.completed}</td>
-                                <td className={task.status === "Completed" ? "status-completed" : "status-incomplete"}>
+                                <td className={task.status === "Completed" ? "badge bg-success" : "badge bg-warning"}>
                                     {task.status}
                                 </td>
                             </tr>
