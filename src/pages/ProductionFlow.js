@@ -4,7 +4,7 @@ import { Modal, Button, Spinner } from "react-bootstrap";
 import "./ProductionFlow.css";
 
 const stages = [
-  { title: "Cutting", statusList: ["Cutting", "Cutting Started"] },
+  { title: "Cutting", statusList: ["Cutting should be started", "Cutting Started"] },
   { title: "Sewing", statusList: ["Cutting Completed", "Sewing is in progress"] },
   { title: "Quality Check", statusList: ["Sewing Completed", "Quality Check in progress"] },
   { title: "Packing", statusList: ["Quality Check Completed", "Packing is in progress"] },
