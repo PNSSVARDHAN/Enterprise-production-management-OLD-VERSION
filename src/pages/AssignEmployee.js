@@ -95,7 +95,7 @@ const AssignEmployee = () => {
                         
                         <div className="row">
                             {order.MachineAllocations.map(machine => (
-                                <div key={machine.id} className="col-12 col-md-6 col-lg-4 mb-4">
+                                <div key={machine.id} className="col-12 col-md-6 col-lg-4">
                                     <div className="step-box border p-3 rounded">
                                         <p><b>Step:</b> {machine.step}</p>
                                         <p><b>Machine:</b> {machine.machine_id}</p>

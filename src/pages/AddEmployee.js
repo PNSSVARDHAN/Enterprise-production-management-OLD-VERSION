@@ -46,7 +46,7 @@ const AddEmployee = () => {
 
                 <div className="d-grid gap-2 mb-3">
                     <button className="btn btn-primary" onClick={fetchLatestRFID}>
-                        📡 Fetch Latest RFID
+                         Fetch Latest RFID
                     </button>
                 </div>
 
@@ -69,7 +69,7 @@ const AddEmployee = () => {
 
                 <div className="d-grid gap-2">
                     <button className="btn btn-success" onClick={handleRegister}>
-                        ✅ Register Employee
+                         Register Employee
                     </button>
                 </div>
             </div>

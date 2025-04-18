@@ -21,12 +21,12 @@ const Orders = () => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/api/orders/progress`)
       .then((response) => {
-        console.log("📦 Orders Progress Fetched:", response.data);
+        console.log(" Orders Progress Fetched:", response.data);
         setOrders(response.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("❌ Error fetching orders:", error);
+        console.error(" Error fetching orders:", error);
         setLoading(false);
       });
   };
@@ -99,7 +99,7 @@ const Orders = () => {
                     <td>{order.order_number}</td>
                     <td>{order.product}</td>
                     <td>{order.quantity}</td>
-                    <td>{getStatusBadge(order.status)}</td>
+                    <td>{order.current_stage}</td>
                     <td>
                       <button
                         onClick={() => fetchOrderSteps(order.id)}
