@@ -93,12 +93,7 @@ const EmployeeList = () => {
                                 <td>
                                     {selectedEmployee?.id === emp.id && (
                                         <div className="text-center">
-                                            <QRCodeCanvas value={selectedEmployee.rfid} size={100} />
-                                            <div className="mt-2">
-                                                <button className="btn btn-secondary btn-sm" onClick={handlePrint}>
-                                                    Print QR
-                                                </button>
-                                            </div>
+                                            <QRCodeCanvas value={selectedEmployee.rfid} size={100}/>
                                         </div>
                                     )}
                                 </td>
