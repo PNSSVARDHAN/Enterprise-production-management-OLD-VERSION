@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import AssignMachine from "./AssignMachine";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./Orders.css"; // Custom CSS for Orders page
+
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA00FF", "#FF4081"];
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -12,6 +15,7 @@ const Orders = () => {
   const [assignStep, setAssignStep] = useState(null);
   const [loading, setLoading] = useState(false);
   const [stepsLoading, setStepsLoading] = useState(false);
+  const [visualizeData, setVisualizeData] = useState(null); // New state for visualization
 
   useEffect(() => {
     fetchOrders();
@@ -22,12 +26,12 @@ const Orders = () => {
     axios
       .get(`${process.env.REACT_APP_API_URL}/api/orders/progress`)
       .then((response) => {
-        console.log(" Orders Progress Fetched:", response.data);
+        console.log("Orders Progress Fetched:", response.data);
         setOrders(response.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error(" Error fetching orders:", error);
+        console.error("Error fetching orders:", error);
         setLoading(false);
       });
   };
@@ -36,7 +40,7 @@ const Orders = () => {
     setStepsLoading(true);
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/orders/${orderId}/steps`);
-      console.log(" Steps fetched for Order", orderId, ":", response.data);
+      console.log("Steps fetched for Order", orderId, ":", response.data);
 
       const stepsWithQuantity = response.data.map((step) => ({
         ...step,
@@ -66,11 +70,19 @@ const Orders = () => {
       });
   };
 
-  const getStatusBadge = (status) => {
-    if (status.toLowerCase() === "completed") {
-      return <span className="badge bg-success">Completed</span>;
-    } else {
-      return <span className="badge bg-warning text-dark">In Progress</span>;
+  const visualizeOrder = async (orderId) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/orders/${orderId}/steps`);
+      console.log("Visualization Data for Order", orderId, ":", response.data);
+      const graphData = response.data.map((step) => ({
+        stepName: step.name,
+        completed: step.completed,
+        quantity: orders.find((order) => order.id === orderId)?.quantity || 0,
+      }));
+      setVisualizeData(graphData);
+    } catch (error) {
+      console.error("Error fetching visualization data:", error);
+      alert("Failed to fetch data for visualization!");
     }
   };
 
@@ -97,6 +109,7 @@ const Orders = () => {
                   <th>Quantity</th>
                   <th>Status</th>
                   <th>Actions</th>
+                  <th>Visualize</th>
                   <th>Delete</th>
                 </tr>
               </thead>
@@ -114,6 +127,14 @@ const Orders = () => {
                         className="btn btn-info btn-sm d-flex align-items-center gap-1"
                       >
                         <i className="bi bi-eye"></i> View
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => visualizeOrder(order.id)}
+                        className="btn btn-primary btn-sm d-flex align-items-center gap-1"
+                      >
+                        <i className="bi bi-bar-chart-line"></i> Visualize
                       </button>
                     </td>
                     <td>
@@ -136,6 +157,15 @@ const Orders = () => {
               <h3 className="mb-3 text-center">
                 🛠️ Steps for Order {selectedOrder.id} - {selectedOrder.order_number}
               </h3>
+              <button
+                className="btn btn-danger btn-sm ms-2"
+                onClick={() => {
+                  setSelectedOrder(null);
+                  setOrderSteps([]);
+                }}
+              >
+                Close
+              </button>
 
               {stepsLoading ? (
                 <div className="text-center">
@@ -193,6 +223,58 @@ const Orders = () => {
               onClose={() => setAssignStep(null)}
             />
           )}
+
+          {/* Visualization Modal */}
+          {visualizeData && (
+  <div className="visualize-modal">
+    <div className="visualize-content">
+      <h4 className="text-center mb-4">📊 Progress Visualization</h4>
+      <button
+        className="btn btn-danger btn-sm mb-3"
+        onClick={() => setVisualizeData(null)}
+      >
+        Close
+      </button>
+
+      {/* Bar Chart */}
+      <h5 className="text-center mb-2">Step-wise Progress</h5>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={visualizeData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="stepName" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="completed" fill="#00c853" name="Completed" />
+          <Bar dataKey="quantity" fill="#6200ea" name="Order Quantity" />
+        </BarChart>
+      </ResponsiveContainer>
+
+      {/* Pie Chart */}
+      <h5 className="text-center mt-5 mb-2">Overall Progress</h5>
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie
+            data={[
+              { name: "Completed", value: visualizeData.reduce((acc, item) => acc + item.completed, 0) },
+              { name: "Remaining", value: visualizeData.reduce((acc, item) => acc + (item.quantity - item.completed), 0) },
+            ]}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+            label
+          >
+            <Cell fill="#00c853" />
+            <Cell fill="#cfd8dc" />
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
+)}
+
         </>
       )}
     </div>
