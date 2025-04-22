@@ -11,6 +11,7 @@ const Orders = () => {
   const [orderSteps, setOrderSteps] = useState([]);
   const [assignStep, setAssignStep] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [stepsLoading, setStepsLoading] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -31,17 +32,24 @@ const Orders = () => {
       });
   };
 
-  const fetchOrderSteps = (orderId) => {
-    const order = orders.find((o) => o.id === orderId);
-    if (order) {
-      const stepsWithDefaults = order.steps.map((step) => ({
+  const fetchOrderSteps = async (orderId) => {
+    setStepsLoading(true);
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/orders/${orderId}/steps`);
+      console.log(" Steps fetched for Order", orderId, ":", response.data);
+
+      const stepsWithQuantity = response.data.map((step) => ({
         ...step,
-        completed: step.completed || 0,
-        quantity: order.quantity,
+        quantity: orders.find((order) => order.id === orderId)?.quantity || 0,
       }));
-      setOrderSteps(stepsWithDefaults);
-      setSelectedOrder(order);
+
+      setOrderSteps(stepsWithQuantity);
+      setSelectedOrder(orders.find((o) => o.id === orderId));
+    } catch (error) {
+      console.error("Error fetching order steps:", error);
+      alert("Failed to fetch order steps!");
     }
+    setStepsLoading(false);
   };
 
   const deleteOrder = (id) => {
@@ -79,7 +87,7 @@ const Orders = () => {
       ) : (
         <>
           {/* Responsive Table */}
-          <div className="table-responsive "style={{ minWidth: "800px" }}>
+          <div className="table-responsive" style={{ minWidth: "800px" }}>
             <table className="table table-bordered table-hover table-striped align-middle">
               <thead className="table-dark">
                 <tr>
@@ -129,44 +137,52 @@ const Orders = () => {
                 🛠️ Steps for Order {selectedOrder.id} - {selectedOrder.order_number}
               </h3>
 
-              <div className="table-responsive">
-                <table className="table table-bordered table-hover table-striped align-middle">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Step Name</th>
-                      <th>Order Quantity</th>
-                      <th>Completed Count</th>
-                      <th>Assign Machine</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orderSteps.map((step, index) => (
-                      <tr key={index} className="animated-row">
-                        <td>{step.step}</td>
-                        <td>{step.quantity}</td>
-                        <td>{step.completed}</td>
-                        <td>
-                          <button
-                            onClick={() => setAssignStep({ order_id: selectedOrder.id, step: step.step })}
-                            className="btn btn-success btn-sm d-flex align-items-center gap-1"
-                            disabled={step.completed >= step.quantity}
-                          >
-                            {step.completed >= step.quantity ? (
-                              <>
-                                <i className="bi bi-check-circle"></i> Completed
-                              </>
-                            ) : (
-                              <>
-                                <i className="bi bi-gear"></i> Assign
-                              </>
-                            )}
-                          </button>
-                        </td>
+              {stepsLoading ? (
+                <div className="text-center">
+                  <div className="spinner-border text-success" role="status">
+                    <span className="visually-hidden">Loading Steps...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-bordered table-hover table-striped align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Step Name</th>
+                        <th>Order Quantity</th>
+                        <th>Completed Count</th>
+                        <th>Assign Machine</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {orderSteps.map((step, index) => (
+                        <tr key={index} className="animated-row">
+                          <td>{step.name}</td>
+                          <td>{step.quantity}</td>
+                          <td>{step.completed}</td>
+                          <td>
+                            <button
+                              onClick={() => setAssignStep({ order_id: selectedOrder.id, step: step.name })}
+                              className="btn btn-success btn-sm d-flex align-items-center gap-1"
+                              disabled={step.completed >= step.quantity}
+                            >
+                              {step.completed >= step.quantity ? (
+                                <>
+                                  <i className="bi bi-check-circle"></i> Completed
+                                </>
+                              ) : (
+                                <>
+                                  <i className="bi bi-gear"></i> Assign
+                                </>
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
