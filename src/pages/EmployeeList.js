@@ -1,18 +1,44 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { QRCodeCanvas } from "qrcode.react";
- // ✅ Install this: npm install qrcode.react
+import { Modal, Button, InputGroup, FormControl } from 'react-bootstrap';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./EmployeeList.css";
 
 const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
-    const [selectedEmployee, setSelectedEmployee] = useState(null); // ✅ Track which employee's QR to show
+    const [filteredEmployees, setFilteredEmployees] = useState([]);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [historyData, setHistoryData] = useState([]);
+    const [filteredHistoryData, setFilteredHistoryData] = useState([]);
+    const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [showQRCodeModal, setShowQRCodeModal] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [historySearchTerm, setHistorySearchTerm] = useState(""); // State for searching history
+    const [currentPage, setCurrentPage] = useState(1);
+    const employeesPerPage = 6;
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/api/employees/`)
-            .then(response => setEmployees(response.data))
+            .then(response => {
+                setEmployees(response.data);
+                setFilteredEmployees(response.data); // Initial filtered list is same as employees
+            })
             .catch(error => console.error("Error fetching employees:", error));
     }, []);
+
+    useEffect(() => {
+        if (searchTerm === "") {
+            setFilteredEmployees(employees);
+        } else {
+            setFilteredEmployees(
+                employees.filter(emp =>
+                    emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    emp.rfid.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+            );
+        }
+    }, [searchTerm, employees]);
 
     const deleteEmployee = (id) => {
         if (!window.confirm("⚠️ Are you sure you want to delete this employee?")) return;
@@ -28,80 +54,173 @@ const EmployeeList = () => {
             });
     };
 
+    const fetchHistory = (employeeId) => {
+        axios.get(`${process.env.REACT_APP_API_URL}/api/employees/history/${employeeId}`)
+            .then(response => {
+                setHistoryData(response.data.history || []);
+                setFilteredHistoryData(response.data.history || []); // Set initial filtered history data
+                setShowHistoryModal(true);
+            })
+            .catch(error => {
+                console.error("Error fetching history:", error);
+                setHistoryData([]);
+                setFilteredHistoryData([]);
+                setShowHistoryModal(true);
+            });
+    };
+
     const handleGenerateQR = (employee) => {
         setSelectedEmployee(employee);
+        setShowQRCodeModal(true);
     };
 
-    const handlePrint = () => {
-        const printWindow = window.open("", "Print QR Code", "width=600,height=600");
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Print QR Code</title>
-                </head>
-                <body style="text-align:center; margin-top:50px;">
-                    <h2>${selectedEmployee.name}</h2>
-                    <div id="qrcode"></div>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-                    <script>
-                        new QRCode(document.getElementById("qrcode"), "${selectedEmployee.rfid}");
-                    </script>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+    const handlePrintQR = () => {
+        window.print();
     };
+
+    // Paginate employee data
+    const indexOfLastEmployee = currentPage * employeesPerPage;
+    const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
+    const currentEmployees = filteredEmployees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
+
+    // Filter history data based on search term
+    useEffect(() => {
+        if (historySearchTerm === "") {
+            setFilteredHistoryData(historyData);
+        } else {
+            setFilteredHistoryData(
+                historyData.filter(record =>
+                    (record.order_Number && record.order_Number.toString().toLowerCase().includes(historySearchTerm.toLowerCase())) ||
+                    (record.Step_Name && record.Step_Name.toLowerCase().includes(historySearchTerm.toLowerCase())) ||
+                    (record.machine_number && record.machine_number.toString().toLowerCase().includes(historySearchTerm.toLowerCase())) ||
+                    (record.target && record.target.toString().toLowerCase().includes(historySearchTerm.toLowerCase())) ||
+                    (record.working_date && new Date(record.working_date).toLocaleDateString().toLowerCase().includes(historySearchTerm.toLowerCase()))
+                )
+            );
+        }
+    }, [historySearchTerm, historyData]);
+    
 
     return (
-        <div className="container-fluid employee-container">
+        <div className="container-fluid">
             <h1 className="text-center mb-4">Employee List</h1>
 
-            <div className="table-responsive">
-                <table className="table table-bordered table-hover">
-                    <thead className="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>RFID</th>
-                            <th>Actions</th>
-                            <th>QR Code</th> {/* ✅ Added header for QR Code */}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {employees.map(emp => (
-                            <tr key={emp.id}>
-                                <td>{emp.id}</td>
-                                <td>{emp.name}</td>
-                                <td>{emp.rfid}</td>
-                                <td className="d-flex gap-2">
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => deleteEmployee(emp.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                    <button
-                                        className="btn btn-primary btn-sm"
-                                        onClick={() => handleGenerateQR(emp)}
-                                    >
-                                        Generate QR
-                                    </button>
-                                </td>
-                                <td>
-                                    {selectedEmployee?.id === emp.id && (
-                                        <div className="text-center">
-                                            <QRCodeCanvas value={selectedEmployee.rfid} size={100}/>
-                                        </div>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            {/* Search Bar */}
+            <InputGroup className="mb-3">
+                <FormControl
+                    placeholder="Search Employee by Name or RFID"
+                    aria-label="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </InputGroup>
+
+            {/* Employee Cards */}
+            <div className="row">
+                {currentEmployees.map(emp => (
+                    <div key={emp.id} className="col-md-6 mb-4">
+                        <div className="employee-card card">
+                            <div className="card-body">
+                                <h5 className="card-title">{emp.name}</h5>
+                                <p><strong>RFID:</strong> {emp.rfid}</p>
+
+                                <div className="button-group">
+                                    <button className="btn btn-danger btn-sm" onClick={() => deleteEmployee(emp.id)}>Delete</button>
+                                    <button className="btn btn-success btn-sm" onClick={() => alert("Analyze Clicked!")}>Analyze</button>
+                                    <button className="btn btn-warning btn-sm" onClick={() => fetchHistory(emp.id)}>Previous Data</button>
+                                    <button className="btn btn-primary btn-sm" onClick={() => handleGenerateQR(emp)}>Generate QR</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
+
+            {/* Pagination Controls */}
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        className={`page-btn ${currentPage === index + 1 ? 'active' : ''}`}
+                        onClick={() => handlePageChange(index + 1)}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+            </div>
+
+            {/* Modal for Showing History */}
+            {showHistoryModal && (
+                <div className="modal-overlay" onClick={() => setShowHistoryModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h4 className="mb-3">Employee Task History</h4>
+
+                        {/* Search for History */}
+                        <InputGroup className="mb-3">
+                            <FormControl
+                                placeholder="Search History"
+                                aria-label="Search"
+                                value={historySearchTerm}
+                                onChange={(e) => setHistorySearchTerm(e.target.value)}
+                            />
+                        </InputGroup>
+
+                        {filteredHistoryData.length > 0 ? (
+                            <div className="table-responsive">
+                                <table className="table table-bordered">
+                                    <thead className="table-dark">
+                                        <tr>
+                                            <th>Order Number</th>
+                                            <th>Step Name</th>
+                                            <th>Machine Number</th>
+                                            <th>Target</th>
+                                            <th>Working Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredHistoryData.map((record, idx) => (
+                                            <tr key={idx}>
+                                                <td>{record.order_Number}</td>
+                                                <td>{record.Step_Name}</td>
+                                                <td>{record.machine_number}</td>
+                                                <td>{record.target}</td>
+                                                <td>{new Date(record.working_date).toLocaleDateString()}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <p>No history records found 🚫</p>
+                        )}
+
+                        <button className="btn btn-secondary mt-3" onClick={() => setShowHistoryModal(false)}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            {/* QR Code Modal */}
+            <Modal show={showQRCodeModal} onHide={() => setShowQRCodeModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>QR Code for {selectedEmployee?.name}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="text-center">
+                    {selectedEmployee && (
+                        <div>
+                            <QRCodeCanvas value={selectedEmployee.rfid} size={150} />
+                            <div className="mt-3">
+                                <Button variant="success" onClick={handlePrintQR}>Print</Button>
+                            </div>
+                        </div>
+                    )}
+                </Modal.Body>
+            </Modal>
         </div>
     );
 };

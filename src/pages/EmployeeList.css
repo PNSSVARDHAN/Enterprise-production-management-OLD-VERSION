@@ -1,5 +1,106 @@
-.employee-container{
-    margin-left:180px;
-    width:700px;
-    margin-top: 30px;
+/* EmployeeList.css */
+.container-fluid {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.employee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 2fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.employee-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.employee-info {
+    margin-bottom: 20px;
+}
+
+.employee-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.button-group button {
+    margin: 5px;
+}
+
+.qr-code {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.btn-sm {
+    font-size: 0.9rem;
+}
+/* EmployeeList.css */
+
+/* Pagination styling */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.page-btn {
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.page-btn:hover {
+    background-color: #ddd;
+}
+
+.page-btn.active {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.page-btn:focus {
+    outline: none;
 }
