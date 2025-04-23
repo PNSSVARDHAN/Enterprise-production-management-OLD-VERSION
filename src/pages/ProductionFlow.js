@@ -3,16 +3,32 @@ import axios from "axios";
 import { Modal, Button, Spinner } from "react-bootstrap";
 import "./ProductionFlow.css";
 
-const stages = [
-  { title: "Cutting", statusList: ["Cutting should be started", "Cutting Started"] },
-  { title: "Sewing", statusList: ["Cutting Completed", "Sewing is in progress"] },
-  { title: "Quality Check", statusList: ["Sewing Completed", "Quality Check in progress"] },
-  { title: "Packing", statusList: ["Quality Check Completed", "Packing is in progress"] },
-  { title: "Dispatch", statusList: ["Packing Completed", "Ready for Dispatch"] },
-];
+const roleStageMapping = {
+  cutting: {
+    stages: ["Cutting should be started", "Cutting Started"],
+    actions: ["Cutting Started", "Cutting Completed"],
+  },
+  sewing: {
+    stages: ["Cutting Completed", "Sewing is in progress"],
+    actions: ["Sewing is in progress", "Sewing Completed"],
+  },
+  quality: {
+    stages: ["Sewing Completed", "Quality Check in progress"],
+    actions: ["Quality Check in progress", "Quality Check Completed"],
+  },
+  packing: {
+    stages: ["Quality Check Completed", "Packing is in progress"],
+    actions: ["Packing is in progress", "Packing Completed"],
+  },
+  dispatch: {
+    stages: ["Packing Completed", "Ready for Dispatch"],
+    actions: [null, "Ready for Dispatch"],
+  },
+};
 
 const stageEnumMap = {
-  "Cutting is in progress": "Cutting Started",
+  "Cutting should be started": "Cutting should be started",
+  "Cutting Started": "Cutting Started",
   "Cutting Completed": "Cutting Completed",
   "Sewing is in progress": "Sewing is in progress",
   "Sewing Completed": "Sewing Completed",
@@ -24,22 +40,16 @@ const stageEnumMap = {
   "Dispatched": "Dispatched",
 };
 
-const stageActions = {
-  Cutting: ["Cutting Started", "Cutting Completed"],
-  Sewing: ["Sewing is in progress", "Sewing Completed"],
-  QualityCheck: ["Quality Check in progress", "Quality Check Completed"],
-  Packing: ["Packing is in progress", "Packing Completed"],
-  Dispatch: [null, "Ready for Dispatch"],
-};
-
 const ProductionFlow = () => {
   const [orders, setOrders] = useState([]);
-  const [selectedStage, setSelectedStage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [actionData, setActionData] = useState(null);
+  const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
+    const storedRole = localStorage.getItem("role"); // Assuming you store role in localStorage
+    setUserRole(storedRole?.toLowerCase()); // Example: "cutting", "sewing", etc.
     fetchOrders();
   }, []);
 
@@ -57,7 +67,7 @@ const ProductionFlow = () => {
   };
 
   const updateStage = (orderId, newStage) => {
-    const mappedStage = stageEnumMap[newStage] || newStage; // map to valid ENUM
+    const mappedStage = stageEnumMap[newStage] || newStage;
     axios
       .post(`${process.env.REACT_APP_API_URL}/api/orders/update-stage`, {
         id: orderId,
@@ -70,25 +80,17 @@ const ProductionFlow = () => {
       .catch((err) => console.error("Error updating order stage", err));
   };
 
-  const filteredOrders = selectedStage
-    ? orders.filter((o) => selectedStage.statusList.includes(o.current_stage))
-    : [];
-
-  const getActions = (stageTitle) => {
-    switch (stageTitle) {
-      case "Cutting":
-        return stageActions.Cutting;
-      case "Sewing":
-        return stageActions.Sewing;
-      case "Quality Check":
-        return stageActions.QualityCheck;
-      case "Packing":
-        return stageActions.Packing;
-      case "Dispatch":
-        return stageActions.Dispatch;
-      default:
-        return [null, null];
+  const getFilteredOrders = () => {
+    if (!userRole) return [];
+    if (userRole === "admin") {
+      return orders;  
     }
+    const allowedStages = roleStageMapping[userRole]?.stages || [];
+    return orders.filter((order) => allowedStages.includes(order.current_stage));
+  };
+
+  const getActions = () => {
+    return roleStageMapping[userRole]?.actions || [null, null];
   };
 
   const handleAction = (orderId, action) => {
@@ -96,94 +98,77 @@ const ProductionFlow = () => {
     setShowModal(true);
   };
 
+  const filteredOrders = getFilteredOrders();
+  const [startAction, completeAction] = getActions();
+
   return (
     <div className="production-flow-container bg-light p-4 rounded shadow-lg border border-primary">
-      {/* Stage Selector (Using Bootstrap pills) */}
-      <ul className="nav nav-pills mb-3">
-        {stages.map((stage) => (
-          <li className="nav-item" key={stage.title}>
-            <button
-              className={`nav-link ${selectedStage?.title === stage.title ? "active" : ""}`}
-              onClick={() => setSelectedStage(stage)}
-            >
-              {stage.title}
-            </button>
-          </li>
-        ))}
-      </ul>
-
       {loading ? (
         <div className="text-center">
           <Spinner animation="border" variant="primary" />
         </div>
       ) : (
-        selectedStage && (
-          <div className="orders-container">
-            <h2 className="mb-4">{selectedStage.title} Orders</h2>
-            {filteredOrders.length === 0 ? (
-              <p>No orders in this stage.</p>
-            ) : (
-              <table className="table table-striped table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Order Number</th>
-                    <th>Quantity</th>
-                    <th>Product</th>
-                    <th>Start</th>
-                    <th>Complete</th>
+        <div className="orders-container">
+          <h2 className="mb-4 text-center text-primary">{userRole?.toUpperCase()} Section Orders</h2>
+
+          {filteredOrders.length === 0 ? (
+            <p>No orders available for your section.</p>
+          ) : (
+            <table className="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Order Number</th>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Start</th>
+                  <th>Complete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td>{order.id}</td>
+                    <td>{order.order_number}</td>
+                    <td>{order.product}</td>
+                    <td>{order.quantity}</td>
+                    <td>
+                      {startAction && (
+                        <button
+                          className="btn btn-warning btn-sm"
+                          onClick={() => handleAction(order.id, startAction)}
+                          disabled={order.current_stage === startAction || order.current_stage === completeAction}
+                        >
+                          Start
+                        </button>
+                      )}
+                    </td>
+                    <td>
+                      {completeAction && (
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleAction(order.id, completeAction)}
+                          disabled={order.current_stage === completeAction}
+                        >
+                          Complete
+                        </button>
+                      )}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredOrders.map((order) => {
-                    const [startAction, completeAction] = getActions(selectedStage.title);
-                    return (
-                      <tr key={order.id}>
-                        <td>{order.id}</td>
-                        <td>{order.order_number}</td>
-                        <td>{order.product}</td>
-                        <td>{order.quantity}</td>
-                        <td>
-                          {startAction && (
-                            <button
-                              className="btn btn-warning btn-sm"
-                              onClick={() => handleAction(order.id, startAction)}
-                              disabled={
-                                order.current_stage === startAction || order.current_stage === completeAction
-                              }
-                            >
-                              Start
-                            </button>
-                          )}
-                        </td>
-                        <td>
-                          {completeAction && (
-                            <button
-                              className="btn btn-success btn-sm"
-                              onClick={() => handleAction(order.id, completeAction)}
-                              disabled={order.current_stage === completeAction}
-                            >
-                              Complete
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       )}
 
-      {/* Modal for Confirmation */}
+      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Stage Change</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to move this order to the next stage? This action cannot be undone.
+          Are you sure you want to move this order to the next stage?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
