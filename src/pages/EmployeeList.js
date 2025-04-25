@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { QRCodeCanvas } from "qrcode.react";
 import { Modal, Button, InputGroup, FormControl } from 'react-bootstrap';
+import {
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  } from 'recharts';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./EmployeeList.css";
 
@@ -13,16 +16,19 @@ const EmployeeList = () => {
     const [filteredHistoryData, setFilteredHistoryData] = useState([]);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [showQRCodeModal, setShowQRCodeModal] = useState(false);
+    const [showGraphModal, setShowGraphModal] = useState(false);
+    const [graphData, setGraphData] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [historySearchTerm, setHistorySearchTerm] = useState(""); // State for searching history
+    const [historySearchTerm, setHistorySearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [graphType, setGraphType] = useState("area"); // or "bar"
     const employeesPerPage = 6;
 
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_API_URL}/api/employees/`)
             .then(response => {
                 setEmployees(response.data);
-                setFilteredEmployees(response.data); // Initial filtered list is same as employees
+                setFilteredEmployees(response.data);
             })
             .catch(error => console.error("Error fetching employees:", error));
     }, []);
@@ -44,8 +50,7 @@ const EmployeeList = () => {
         if (!window.confirm("⚠️ Are you sure you want to delete this employee?")) return;
 
         axios.delete(`${process.env.REACT_APP_API_URL}/api/employees/${id}`)
-            .then(response => {
-                console.log(response.data.message);
+            .then(() => {
                 setEmployees(employees.filter(emp => emp.id !== id));
             })
             .catch(error => {
@@ -54,18 +59,34 @@ const EmployeeList = () => {
             });
     };
 
-    const fetchHistory = (employeeId) => {
+    const fetchHistory = (employeeId, showGraph = false) => {
         axios.get(`${process.env.REACT_APP_API_URL}/api/employees/history/${employeeId}`)
             .then(response => {
-                setHistoryData(response.data.history || []);
-                setFilteredHistoryData(response.data.history || []); // Set initial filtered history data
-                setShowHistoryModal(true);
+                const history = response.data.history || [];
+                setHistoryData(history);
+                setFilteredHistoryData(history);
+
+                if (showGraph) {
+                    const data = history.map(entry => ({
+                        date: new Date(entry.working_date).toLocaleDateString(),
+                        target: entry.target
+                    }));
+                    setGraphData(data);
+                    setShowGraphModal(true);
+                } else {
+                    setShowHistoryModal(true);
+                }
             })
             .catch(error => {
                 console.error("Error fetching history:", error);
                 setHistoryData([]);
                 setFilteredHistoryData([]);
-                setShowHistoryModal(true);
+                if (showGraph) {
+                    setGraphData([]);
+                    setShowGraphModal(true);
+                } else {
+                    setShowHistoryModal(true);
+                }
             });
     };
 
@@ -78,7 +99,6 @@ const EmployeeList = () => {
         window.print();
     };
 
-    // Paginate employee data
     const indexOfLastEmployee = currentPage * employeesPerPage;
     const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
     const currentEmployees = filteredEmployees.slice(indexOfFirstEmployee, indexOfLastEmployee);
@@ -89,7 +109,6 @@ const EmployeeList = () => {
 
     const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
 
-    // Filter history data based on search term
     useEffect(() => {
         if (historySearchTerm === "") {
             setFilteredHistoryData(historyData);
@@ -105,7 +124,6 @@ const EmployeeList = () => {
             );
         }
     }, [historySearchTerm, historyData]);
-    
 
     return (
         <div className="container-fluid">
@@ -115,7 +133,6 @@ const EmployeeList = () => {
             <InputGroup className="mb-3">
                 <FormControl
                     placeholder="Search Employee by Name or RFID"
-                    aria-label="Search"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -132,7 +149,7 @@ const EmployeeList = () => {
 
                                 <div className="button-group">
                                     <button className="btn btn-danger btn-sm" onClick={() => deleteEmployee(emp.id)}>Delete</button>
-                                    <button className="btn btn-success btn-sm" onClick={() => alert("Analyze Clicked!")}>Analyze</button>
+                                    <button className="btn btn-success btn-sm" onClick={() => fetchHistory(emp.id, true)}>Analyze</button>
                                     <button className="btn btn-warning btn-sm" onClick={() => fetchHistory(emp.id)}>Previous Data</button>
                                     <button className="btn btn-primary btn-sm" onClick={() => handleGenerateQR(emp)}>Generate QR</button>
                                 </div>
@@ -155,17 +172,14 @@ const EmployeeList = () => {
                 ))}
             </div>
 
-            {/* Modal for Showing History */}
+            {/* History Modal */}
             {showHistoryModal && (
                 <div className="modal-overlay" onClick={() => setShowHistoryModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <h4 className="mb-3">Employee Task History</h4>
-
-                        {/* Search for History */}
                         <InputGroup className="mb-3">
                             <FormControl
                                 placeholder="Search History"
-                                aria-label="Search"
                                 value={historySearchTerm}
                                 onChange={(e) => setHistorySearchTerm(e.target.value)}
                             />
@@ -205,6 +219,34 @@ const EmployeeList = () => {
                 </div>
             )}
 
+            {/* Graph Modal */}
+            <Modal show={showGraphModal} onHide={() => setShowGraphModal(false)} size="lg">
+  <Modal.Header closeButton>
+    <Modal.Title>Target per Date (Area Chart)</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {graphData.length > 0 ? (
+      <ResponsiveContainer width="100%" height={300}>
+        <AreaChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <XAxis dataKey="date" />
+          <YAxis />
+          <CartesianGrid strokeDasharray="3 3" />
+          <Tooltip />
+          <Area type="monotone" dataKey="target" stroke="#8884d8" fillOpacity={1} fill="url(#colorTarget)" />
+        </AreaChart>
+      </ResponsiveContainer>
+    ) : (
+      <p>No data available for graph.</p>
+    )}
+  </Modal.Body>
+</Modal>
+
             {/* QR Code Modal */}
             <Modal show={showQRCodeModal} onHide={() => setShowQRCodeModal(false)}>
                 <Modal.Header closeButton>
@@ -212,12 +254,12 @@ const EmployeeList = () => {
                 </Modal.Header>
                 <Modal.Body className="text-center">
                     {selectedEmployee && (
-                        <div>
+                        <>
                             <QRCodeCanvas value={selectedEmployee.rfid} size={150} />
                             <div className="mt-3">
                                 <Button variant="success" onClick={handlePrintQR}>Print</Button>
                             </div>
-                        </div>
+                        </>
                     )}
                 </Modal.Body>
             </Modal>

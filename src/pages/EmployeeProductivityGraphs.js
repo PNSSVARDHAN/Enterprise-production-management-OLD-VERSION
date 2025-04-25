@@ -94,23 +94,6 @@ const EmployeeProductivityGraphs = () => {
 
                                         <div className="col-12 col-md-6">
                                             <div className="card shadow-sm p-3">
-                                                <Line
-                                                    data={{
-                                                        labels: order.hourlyTrend?.map(d => d.hour_slot),
-                                                        datasets: [{
-                                                            label: "Hourly Productivity",
-                                                            data: order.hourlyTrend?.map(d => d.hourly_completed),
-                                                            borderColor: "lime",
-                                                            backgroundColor: "rgba(0, 255, 0, 0.5)",
-                                                            borderWidth: 2
-                                                        }]
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-12 col-md-6">
-                                            <div className="card shadow-sm p-3">
                                                 <Radar
                                                     data={{
                                                         labels: order.employeePerformance?.map(d => `Emp ${d.employee_id}`),

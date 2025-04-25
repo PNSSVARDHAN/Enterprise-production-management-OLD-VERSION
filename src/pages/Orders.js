@@ -108,6 +108,7 @@ const Orders = () => {
                   <th>Product</th>
                   <th>Quantity</th>
                   <th>Status</th>
+                  <th>Created Date (M-D-Y)</th>
                   <th>Actions</th>
                   <th>Visualize</th>
                   <th>Delete</th>
@@ -121,6 +122,7 @@ const Orders = () => {
                     <td>{order.product}</td>
                     <td>{order.quantity}</td>
                     <td>{order.current_stage}</td>
+                    <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td>
                       <button
                         onClick={() => fetchOrderSteps(order.id)}

@@ -53,6 +53,7 @@ const Navbar = ({ setAuth }) => {
               <NavItem to="/assign-employee" icon={<FaCogs />} text="Assign Employee" collapsed={collapsed} />
               <NavItem to="/productivity" icon={<span role="img" aria-label="graphs">📊</span>} text="Productivity Graphs" collapsed={collapsed} />
               <NavItem to="/register" icon={<FaUserPlus />} text="Register" collapsed={collapsed} />
+              <NavItem to="/users" icon={<FaUsers />} text="Users" collapsed={collapsed} />
 
             </>
           )}

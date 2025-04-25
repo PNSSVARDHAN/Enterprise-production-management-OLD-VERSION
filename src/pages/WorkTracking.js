@@ -37,42 +37,48 @@ const WorkTracking = () => {
     }
 
     return (
-        <div className="container-worktracking mt-4">
-            <h1 className="mb-4">Work Tracking</h1>
+        <div className="d-flex justify-content-center align-items-center mt-4">
+            <div className="container-worktracking">
+                <h1 className="mb-4 text-center">Work Tracking</h1>
 
-            {/* Display error message if fetching fails */}
-            {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                {/* Display error message if fetching fails */}
+                {error && <div className="alert alert-danger text-center" role="alert">{error}</div>}
 
-            {employeeTasks.length === 0 ? (
-                <div className="alert alert-warning" role="alert">
-                    No active tasks assigned.
-                </div>
-            ) : (
-                <table className="table table-striped table-bordered table-responsive">
-                    <thead className="thead-dark">
-                        <tr>
-                            <th>Employee</th>
-                            <th>Machine</th>
-                            <th>Target</th>
-                            <th>Completed</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {employeeTasks.map(task => (
-                            <tr key={task.id}>
-                                <td>{task.Employee?.name} (RFID: {task.Employee?.rfid})</td>
-                                <td>{task.MachineAllocation?.machine_id}</td>
-                                <td>{task.target}</td>
-                                <td>{task.completed}</td>
-                                <td className={task.status === "Completed" ? "badge bg-success" : "badge bg-warning"}>
-                                    {task.status}
-                                </td>
+                {employeeTasks.length === 0 ? (
+                    <div className="alert alert-warning text-center" role="alert">
+                        No active tasks assigned.
+                    </div>
+                ) : (
+                    <table className="table table-striped table-bordered table-responsive">
+                        <thead className="thead-dark">
+                            <tr>
+                                <th>Employee</th>
+                                <th>Machine</th>
+                                <th>Target</th>
+                                <th>Completed</th>
+                                <th>Status</th>
+                                <th>Assign Date</th>
+                                <th>Last Scan</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+                        </thead>
+                        <tbody>
+                            {employeeTasks.map(task => (
+                                <tr key={task.id}>
+                                    <td>{task.Employee?.name} (RFID: {task.Employee?.rfid})</td>
+                                    <td>{task.MachineAllocation?.machine_id}</td>
+                                    <td>{task.target}</td>
+                                    <td>{task.completed}</td>
+                                    <td className={task.status === "Completed" ? "badge bg-success" : "badge bg-warning"}>
+                                        {task.status}
+                                    </td>
+                                    <td>{new Date(task.createdAt).toLocaleString()}</td>
+                                    <td>{new Date(task.updatedAt).toLocaleString()}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
         </div>
     );
 };
