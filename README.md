@@ -109,7 +109,9 @@ The backend API will be available at: [http://localhost:5000](http://localhost:5
 
 ## ✅ You're all set!
 
-This file ensures proper documentation for setting up the **Frontend**, **Backend**, and connecting your  database  on any system. 🚀
+This file ensures proper documentation for setting up the **Frontend**, **Backend**, and connecting your  database  on any system. 
+
+please do verify the config file in backend folder and check the both frontend and backend link in both the folders  
 
 ---
 
